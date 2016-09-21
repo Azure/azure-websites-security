@@ -9,7 +9,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace Microsoft.Azure.Web.Cryptography
+namespace Microsoft.Azure.Web.DataProtection
 {
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{C465FD69-978F-4EF1-B365-9E731494252B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Azure.Web.Cryptography</RootNamespace>
-    <AssemblyName>Microsoft.Azure.Web.Cryptography</AssemblyName>
+    <RootNamespace>Microsoft.Azure.Web.DataProtection</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Web.DataProtection</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PackageVersion Condition=" '$(PackageVersion)' == '' ">0.2.0-alpha</PackageVersion>
@@ -68,7 +68,7 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
-    <Exec Command="nuget pack $(MSBuildProjectDirectory)\Microsoft.Azure.WebSites.Cryptography.nuspec -Prop Configuration=$(Configuration);PackageVersion=$(PackageVersion) -OutputDirectory $(OutputPath)">
+    <Exec Command="nuget pack $(MSBuildProjectDirectory)\Microsoft.Azure.WebSites.DataProtection.nuspec -Prop Configuration=$(Configuration);PackageVersion=$(PackageVersion) -OutputDirectory $(OutputPath)">
     </Exec>
   </Target>
   <Import Project="..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />

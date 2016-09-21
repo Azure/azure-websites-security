@@ -7,8 +7,8 @@
     <ProjectGuid>{AD526575-C263-4D5E-A4ED-20BF8BCF38BA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Azure.Web.Cryptography.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Azure.Web.Cryptography.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Azure.Web.DataProtection.Tests</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Web.DataProtection.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -88,9 +88,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Web.Cryptography\Web.Cryptography.csproj">
+    <ProjectReference Include="..\..\src\Web.Cryptography\Web.DataProtection.csproj">
       <Project>{c465fd69-978f-4ef1-b365-9e731494252b}</Project>
-      <Name>Web.Cryptography</Name>
+      <Name>Web.DataProtection</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Cryptography", "src\Web.Cryptography\Web.Cryptography.csproj", "{C465FD69-978F-4EF1-B365-9E731494252B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.DataProtection", "src\Web.Cryptography\Web.DataProtection.csproj", "{C465FD69-978F-4EF1-B365-9E731494252B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Cryptography.Tests", "test\Web.Cryptography.Tests\Web.Cryptography.Tests.csproj", "{AD526575-C263-4D5E-A4ED-20BF8BCF38BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.DataProtection.Tests", "test\Web.Cryptography.Tests\Web.DataProtection.Tests.csproj", "{AD526575-C263-4D5E-A4ED-20BF8BCF38BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -68,7 +68,7 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
-    <Exec Command="nuget pack $(MSBuildProjectDirectory)\Microsoft.Azure.Web.Cryptography.nuspec -Prop Configuration=$(Configuration);PackageVersion=$(PackageVersion) -OutputDirectory $(OutputPath)">
+    <Exec Command="nuget pack $(MSBuildProjectDirectory)\Microsoft.Azure.WebSites.Cryptography.nuspec -Prop Configuration=$(Configuration);PackageVersion=$(PackageVersion) -OutputDirectory $(OutputPath)">
     </Exec>
   </Target>
   <Import Project="..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\..\packages\StyleCop.MSBuild.4.7.54.0\build\StyleCop.MSBuild.Targets')" />

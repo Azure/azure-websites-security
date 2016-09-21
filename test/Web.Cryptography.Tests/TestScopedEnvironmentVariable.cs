@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Web.Cryptography.Tests
+namespace Microsoft.Azure.Web.Cryptography.Tests
 {
     public class TestScopedEnvironmentVariable : IDisposable
     {

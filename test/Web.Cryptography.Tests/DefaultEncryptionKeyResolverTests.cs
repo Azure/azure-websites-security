@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Azure.Web.Cryptography;
 using Xunit;
 
-namespace Web.Cryptography.Tests
+namespace Microsoft.Azure.Web.Cryptography.Tests
 {
     public class DefaultEncryptionKeyResolverTests
     {

@@ -5,7 +5,7 @@ using Microsoft.Azure.Web.Cryptography;
 using Moq;
 using Xunit;
 
-namespace Web.Cryptography.Tests
+namespace Microsoft.Azure.Web.Cryptography.Tests
 {
     public class CryptoServiceTests
     {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
-namespace Microsoft.Azure.Web.Cryptography.Tests
+namespace Microsoft.Azure.Web.DataProtection.Tests
 {
     public class DefaultEncryptionKeyResolverTests
     {

@@ -4,7 +4,7 @@
 using System;
 using System.Linq;
 
-namespace Microsoft.Azure.Web.Cryptography
+namespace Microsoft.Azure.Web.DataProtection
 {
     public class CryptographicKey
     {

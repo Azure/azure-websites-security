@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Microsoft.Azure.Web.Cryptography
+namespace Microsoft.Azure.Web.DataProtection
 {
     /// <summary>
     /// Provides encryption and decryption services using the Advanced Encryption Standard (AES) algorithm.

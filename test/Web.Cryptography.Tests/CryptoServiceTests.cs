@@ -1,11 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using Microsoft.Azure.Web.Cryptography;
+using System.Threading.Tasks;
 using Moq;
 using Xunit;
 
-namespace Microsoft.Azure.Web.Cryptography.Tests
+namespace Microsoft.Azure.Web.DataProtection.Tests
 {
     public class CryptoServiceTests
     {

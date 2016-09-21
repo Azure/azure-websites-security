@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Azure.Web.Cryptography
+namespace Microsoft.Azure.Web.DataProtection
 {
     public static class Constants
     {

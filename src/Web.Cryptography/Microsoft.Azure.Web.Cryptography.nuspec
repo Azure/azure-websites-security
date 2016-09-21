@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Microsoft.Azure.Web.Cryptography</id>
+    <title>Microsoft.Azure.Web.Cryptography</title>
+    <version>$PackageVersion$</version>
+    <authors>Microsoft</authors>
+    <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
+    <summary>Microsoft.Azure.Web.Cryptography provides types to assist with secret encryption and other cryptographic operations when running on Azure App Service.</summary>
+    <description>This package provides types to assist with secret encryption and other cryptographic operations when running on Azure App Service (Web Apps, Mobile Apps, Azure Functions, etc.).</description>
+    <language>en-US</language>
+    <projectUrl>https://azure.microsoft.com/en-us/documentation/articles/websites-webjobs-resources</projectUrl>
+    <licenseUrl>http://www.microsoft.com/web/webpi/eula/aspnetcomponent_rtw_enu.htm</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <tags>Microsoft Azure Web Cryptography</tags>
+  </metadata>
+  <files>
+    <file src="bin\$Configuration$\Microsoft.Azure.Web.Cryptography.dll" target="lib\net46" /> 
+    <file src="bin\$Configuration$\Microsoft.Azure.Web.Cryptography.pdb" target="lib\net46" /> 
+  </files>
+</package>

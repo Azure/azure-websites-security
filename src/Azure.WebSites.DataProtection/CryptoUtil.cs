@@ -11,5 +11,14 @@ namespace Microsoft.Azure.Web.DataProtection
             => Enumerable.Range(0, keyValue.Length / 2)
             .Select(b => Convert.ToByte(keyValue.Substring(b * 2, 2), 16))
             .ToArray();
+
+        internal static byte[] CreateKey()
+        {
+            using (var aes = System.Security.Cryptography.Aes.Create())
+            {
+                aes.GenerateKey();
+                return aes.Key;
+            }
+        }
     }
 }

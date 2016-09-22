@@ -9,11 +9,13 @@ namespace Microsoft.Azure.Web.DataProtection
 {
     public static class DataProtectionProvider
     {
-        public static IDataProtectionProvider CreateAzureDataProtector()
+        public static IDataProtectionProvider CreateAzureDataProtector(Action<IDataProtectionBuilder> configurationHandler = null)
         {
             var serviceCollection = new ServiceCollection();
             var builder = serviceCollection.AddDataProtection()
                 .UseAzureWebsitesProviderSettings();
+
+            configurationHandler?.Invoke(builder);
 
             return serviceCollection.BuildServiceProvider().GetRequiredService<IDataProtectionProvider>();
         }

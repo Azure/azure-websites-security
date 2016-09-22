@@ -10,7 +10,8 @@ namespace Tests
         [Fact]
         public void EncryptedValue_CanBeDecrypted() 
         {
-            var provider = DataProtectionProvider.CreateAzureDataProtector();
+            var provider = DataProtectionProvider.CreateAzureDataProtector(b => b.WithLocalDevelopmentKeyResolver());
+
             var protector = provider.CreateProtector("test");
 
             string expected = "test string";

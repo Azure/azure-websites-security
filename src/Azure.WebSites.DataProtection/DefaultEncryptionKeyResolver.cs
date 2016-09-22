@@ -7,45 +7,34 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {
         public const string DefaultEncryptionKeyId = "default";
-        private const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
-
+        
         private static readonly string[] DefaultKeyIdMappings = new[] { DefaultEncryptionKeyId, Constants.AzureWebsiteEncryptionKey };
-        private readonly string _rootWebConfigPath;
-        private CryptographicKey _defaultKey;
 
-        public DefaultEncryptionKeyResolver()
-            : this(Constants.RootWebConfigPath)
+        internal DefaultEncryptionKeyResolver()
         {
-
         }
 
-        internal DefaultEncryptionKeyResolver(string configPath)
-        {
-            _rootWebConfigPath = configPath;
-        }
+        public byte[] ResolveKey(string keyId) => string.IsNullOrEmpty(keyId) ? GetCurrentKey() : GetNamedKey(keyId);
 
-        public CryptographicKey ResolveKey(string keyId) => string.IsNullOrEmpty(keyId) ? GetCurrentKey() : GetNamedKey(keyId);
-
-        private CryptographicKey GetNamedKey(string keyId)
+        private byte[] GetNamedKey(string keyId)
         {
             string keyValue = IsDefaultKey(keyId) ? GetDefaultKeyValue() : Environment.GetEnvironmentVariable(keyId);
 
             if (keyValue != null)
             {
-                return CryptographicKey.FromHexString(keyId, keyValue);
+                return CryptoUtil.ConvertHexToByteArray(keyValue);
             }
 
             return null;
         }
 
-        private CryptographicKey GetCurrentKey()
+        private byte[] GetCurrentKey()
         {
             string keyId = Environment.GetEnvironmentVariable(Constants.AzureWebsiteEncryptionKeyId);
 
@@ -57,19 +46,16 @@ namespace Microsoft.Azure.Web.DataProtection
             return GetDefaultKey();
         }
 
-        private CryptographicKey GetDefaultKey()
+        private byte[] GetDefaultKey()
         {
-            if (_defaultKey == null)
-            {
+            
                 string keyValue = GetDefaultKeyValue();
 
                 if (keyValue != null)
                 {
-                    _defaultKey = CryptographicKey.FromHexString(DefaultEncryptionKeyId, keyValue);
+                 return   CryptoUtil.ConvertHexToByteArray(keyValue);
                 }
-            }
-
-            return _defaultKey;
+            return null;
         }
 
         private string GetDefaultKeyValue()
@@ -78,7 +64,7 @@ namespace Microsoft.Azure.Web.DataProtection
             {
                 // If running in Azure, try to pull the key from the environment
                 // and fallback to config file if not available
-                return Environment.GetEnvironmentVariable(Constants.AzureWebsiteEncryptionKey) ?? GetMachineConfigKey(_rootWebConfigPath);
+                return Environment.GetEnvironmentVariable(Constants.AzureWebsiteEncryptionKey) ?? GetMachineConfigKey();
             }
 
             return Environment.GetEnvironmentVariable(Constants.AzureWebsiteLocalEncryptionKey);
@@ -88,23 +74,32 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private static bool IsDefaultKey(string keyName) => DefaultKeyIdMappings.Contains(keyName, StringComparer.OrdinalIgnoreCase);
 
-        private static string GetMachineConfigKey(string configPath)
+
+        private static string GetMachineConfigKey()
         {
-            string key = null;
-            if (File.Exists(configPath))
-            {
-                using (var reader = new StringReader(File.ReadAllText(configPath)))
-                {
-                    var xdoc = XDocument.Load(reader);
+#if NET46
+            return ((System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey")).DecryptionKey;
+#elif NETSTANDARD1_3
+            //const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
 
-                    string siteName = Environment.GetEnvironmentVariable(Constants.AzureWebsiteName);
-                    string xpath = string.Format(CultureInfo.InvariantCulture, MachingKeyXPathFormat, siteName);
+            return string.Empty;
+            //string key = null;
+            //if (File.Exists(configPath))
+            //{
+            //    using (var reader = new StringReader(File.ReadAllText(configPath)))
+            //    {
+            //        var xdoc = XDocument.Load(reader);
 
-                    key = ((IEnumerable)xdoc.XPathEvaluate(xpath)).Cast<XAttribute>().FirstOrDefault()?.Value;
-                }
-            }
+            //        string siteName = Environment.GetEnvironmentVariable(Constants.AzureWebsiteName);
+            //        string xpath = string.Format(CultureInfo.InvariantCulture, MachingKeyXPathFormat, siteName);
 
-            return key;
+            //        key = ((IEnumerable)xdoc..XPathEvaluate(xpath)).Cast<XAttribute>().FirstOrDefault()?.Value;
+            //    }
+            //}
+
+            //return key;
+#endif
         }
+
     }
 }

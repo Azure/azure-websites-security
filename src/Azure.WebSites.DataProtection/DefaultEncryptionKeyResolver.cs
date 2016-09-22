@@ -16,10 +16,6 @@ namespace Microsoft.Azure.Web.DataProtection
         
         private static readonly string[] DefaultKeyIdMappings = new[] { DefaultEncryptionKeyId, Constants.AzureWebsiteEncryptionKey };
 
-        internal DefaultEncryptionKeyResolver()
-        {
-        }
-
         public byte[] ResolveKey(string keyId) => string.IsNullOrEmpty(keyId) ? GetCurrentKey() : GetNamedKey(keyId);
 
         private byte[] GetNamedKey(string keyId)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,16 @@ namespace Microsoft.Azure.Web.DataProtection
 
         public IReadOnlyCollection<IKey> GetAllKeys()
         {
-            var authenticatedEncryptorDescriptor = new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(_keyResolver.ResolveKey(Guid.Empty.ToString())), _services);
+            // TODO: Resolve multiple keys
+
+            byte[] defaultKey = _keyResolver.ResolveKey(Guid.Empty.ToString());
+            if (defaultKey== null)
+            {
+                // TODO: 
+                throw new CryptographicException($"Unable to resolve default key. ... (Key creation...)");
+            }
+
+            var authenticatedEncryptorDescriptor = new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(defaultKey), _services);
 
             return new List<AzureKey>
                 {

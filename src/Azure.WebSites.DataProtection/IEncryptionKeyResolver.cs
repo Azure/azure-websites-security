@@ -7,6 +7,6 @@ namespace Microsoft.Azure.Web.DataProtection
 {
     public interface IEncryptionKeyResolver
     {
-        CryptographicKey ResolveKey(string keyId);
+        byte[] ResolveKey(string keyId);
     }
 }

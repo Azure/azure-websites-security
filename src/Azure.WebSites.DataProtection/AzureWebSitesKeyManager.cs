@@ -18,7 +18,9 @@ namespace Microsoft.Azure.Web.DataProtection
         private readonly IEncryptionKeyResolver _keyResolver;
         private readonly IServiceProvider _services;
         private readonly static DateTimeOffset BaseCreationDateTime = DateTimeOffset.UtcNow.AddYears(-1);
-        private readonly static DateTimeOffset ExpirationTime = DateTimeOffset.MaxValue;
+        
+        // Default expiration time shorter than MaxValue to account for clock skew calculations.
+        private readonly static DateTimeOffset ExpirationTime = DateTimeOffset.MaxValue.AddDays(-1);
 
         public AzureWebsitesKeyManager(IAuthenticatedEncryptorConfiguration configuration, IServiceProvider services)
         {
@@ -40,17 +42,16 @@ namespace Microsoft.Azure.Web.DataProtection
 
         public IReadOnlyCollection<IKey> GetAllKeys()
         {
-            var result = new List<AzureKey>();
-
             IReadOnlyCollection<CryptographicKey> keys = _keyResolver.GetAllKeys();
 
-            keys.Select((k, i) => new AzureKey(k.Id,
+            var result = keys.Select((k, i) => new AzureKey(k.Id,
                 BaseCreationDateTime.AddYears(-i),
                 BaseCreationDateTime.AddYears(-i),
                 ExpirationTime,
-                new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(k.Value), _services)));
+                new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(k.Value), _services)))
+                .ToList();
 
-            return result;
+            return result.AsReadOnly();
         }
 
         public CancellationToken GetCacheExpirationToken()

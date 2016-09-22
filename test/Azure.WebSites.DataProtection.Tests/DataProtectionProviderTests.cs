@@ -3,7 +3,7 @@ using Microsoft.Azure.Web.DataProtection;
 using Microsoft.AspNetCore.DataProtection;
 using Xunit;
 
-namespace Tests
+namespace Microsoft.Azure.Web.DataProtection.Tests
 {
     public class DataProtectionProviderTests
     {
@@ -17,7 +17,7 @@ namespace Tests
             string expected = "test string";
 
             string encrypted = protector.Protect(expected);
-
+            
             string result = protector.Unprotect(encrypted);
 
             Assert.Equal(expected, result);

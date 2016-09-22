@@ -17,6 +17,8 @@ namespace Microsoft.Azure.Web.DataProtection
         private readonly AuthenticatedEncryptorConfiguration _encryptorConfiguration;
         private readonly IEncryptionKeyResolver _keyResolver;
         private readonly IServiceProvider _services;
+        private readonly static DateTimeOffset BaseCreationDateTime = DateTimeOffset.UtcNow.AddYears(-1);
+        private readonly static DateTimeOffset ExpirationTime = DateTimeOffset.MaxValue;
 
         public AzureWebsitesKeyManager(IAuthenticatedEncryptorConfiguration configuration, IServiceProvider services)
         {
@@ -38,21 +40,17 @@ namespace Microsoft.Azure.Web.DataProtection
 
         public IReadOnlyCollection<IKey> GetAllKeys()
         {
-            // TODO: Resolve multiple keys
+            var result = new List<AzureKey>();
 
-            byte[] defaultKey = _keyResolver.ResolveKey(Guid.Empty.ToString());
-            if (defaultKey== null)
-            {
-                // TODO: 
-                throw new CryptographicException($"Unable to resolve default key. ... (Key creation...)");
-            }
+            IReadOnlyCollection<CryptographicKey> keys = _keyResolver.GetAllKeys();
 
-            var authenticatedEncryptorDescriptor = new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(defaultKey), _services);
+            keys.Select((k, i) => new AzureKey(k.Id,
+                BaseCreationDateTime.AddYears(-i),
+                BaseCreationDateTime.AddYears(-i),
+                ExpirationTime,
+                new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(k.Value), _services)));
 
-            return new List<AzureKey>
-                {
-                    new AzureKey(Guid.Empty, DateTimeOffset.UtcNow.AddYears(-20), DateTimeOffset.UtcNow.AddYears(-20), DateTimeOffset.UtcNow.AddYears(20), authenticatedEncryptorDescriptor)
-                }.AsReadOnly();
+            return result;
         }
 
         public CancellationToken GetCacheExpirationToken()

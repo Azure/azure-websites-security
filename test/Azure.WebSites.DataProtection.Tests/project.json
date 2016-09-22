@@ -4,23 +4,25 @@
     "debugType": "portable"
   },
   "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.1"
+    },
     "System.Runtime.Serialization.Primitives": "4.1.1",
     "xunit": "2.1.0",
-    "dotnet-test-xunit": "1.0.0-rc2-192208-24",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Moq": "4.6.38-alpha",
-    "Azure.WebSites.DataProtection": "0.1.5-*",
-    "Microsoft.AspNetCore.DataProtection": "1.0.0"
-  },
+    "Azure.WebSites.DataProtection": {
+      "version": "0.1.6-*",
+      "target": "project"
+    },
+     "Microsoft.AspNetCore.DataProtection": "1.0.0"
+    },
   "testRunner": "xunit",
-  "frameworks": {
+ "frameworks": {
     "netcoreapp1.0": {
-      "dependencies": {
-        "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0"
-        }
-      },
       "imports": [
+        "netstandardapp1.5",
         "dotnet5.4",
         "portable-net451+win8"
       ]

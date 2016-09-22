@@ -7,14 +7,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using static Microsoft.Azure.Web.DataProtection.Constants;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {
-        public const string DefaultEncryptionKeyId = "default";
-        
-        private static readonly string[] DefaultKeyIdMappings = new[] { DefaultEncryptionKeyId, Constants.AzureWebsiteEncryptionKey };
+        private static readonly string[] DefaultKeyIdMappings = new[] { DefaultEncryptionKeyId, AzureWebsiteEncryptionKey };
 
         public byte[] ResolveKey(string keyId) => string.IsNullOrEmpty(keyId) ? GetCurrentKey() : GetNamedKey(keyId);
 
@@ -32,7 +31,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private byte[] GetCurrentKey()
         {
-            string keyId = Environment.GetEnvironmentVariable(Constants.AzureWebsiteEncryptionKeyId);
+            string keyId = Environment.GetEnvironmentVariable(AzureWebsiteEncryptionKeyId);
 
             if (keyId != null)
             {
@@ -60,13 +59,13 @@ namespace Microsoft.Azure.Web.DataProtection
             {
                 // If running in Azure, try to pull the key from the environment
                 // and fallback to config file if not available
-                return Environment.GetEnvironmentVariable(Constants.AzureWebsiteEncryptionKey) ?? GetMachineConfigKey();
+                return Environment.GetEnvironmentVariable(AzureWebsiteEncryptionKey) ?? GetMachineConfigKey();
             }
 
-            return Environment.GetEnvironmentVariable(Constants.AzureWebsiteLocalEncryptionKey);
+            return Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey);
         }
 
-        private static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(Constants.AzureWebsiteInstanceId) != null;
+        private static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(AzureWebsiteInstanceId) != null;
 
         private static bool IsDefaultKey(string keyName) => DefaultKeyIdMappings.Contains(keyName, StringComparer.OrdinalIgnoreCase);
 

@@ -1,8 +1,8 @@
 {
 
-  "title": "Microsoft.Azure.WebSites.DataProtection",
+  "title": "Microsoft.Azure.Websites.DataProtection",
   "name": "Microsoft.Azure.WebSites.DataProtection",
-  "version": "0.1.5-*",
+  "version": "0.1.6-*",
 
   "dependencies": {
     "Microsoft.AspNetCore.DataProtection": "1.0.0",

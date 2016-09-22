@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using System;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,24 @@ namespace Microsoft.Azure.Web.DataProtection
         {
             builder.DisableAutomaticKeyGeneration();
             builder.Services.AddSingleton<IKeyManager, AzureWebsitesKeyManager>();
+
+            return builder;
+        }
+
+        public static IDataProtectionBuilder WithLocalDevelopmentKeyResolver(this IDataProtectionBuilder builder)
+            => WithCustomEncryptionKeyResolver(builder, s => new LocalDevelopmentKeyResolver());
+
+   
+        public static IDataProtectionBuilder WithLocalDevelopmentKeyResolver(this IDataProtectionBuilder builder, string testKey)
+            => WithCustomEncryptionKeyResolver(builder, s => new LocalDevelopmentKeyResolver(testKey));
+
+        
+        public static IDataProtectionBuilder WithLocalDevelopmentKeyResolver(this IDataProtectionBuilder builder, byte[] testKey)
+            => WithCustomEncryptionKeyResolver(builder, s => new LocalDevelopmentKeyResolver(testKey));
+
+        public static IDataProtectionBuilder WithCustomEncryptionKeyResolver(this IDataProtectionBuilder builder, Func<IServiceProvider, IEncryptionKeyResolver> resolverFactory)
+        {
+            builder.Services.AddSingleton(resolverFactory);
 
             return builder;
         }

@@ -15,8 +15,6 @@ namespace Microsoft.Azure.Web.DataProtection
 {
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {
-        private static DateTimeOffset BaseCreationTime = DateTimeOffset.UtcNow.AddYears(-1);
-        private static DateTimeOffset BaseExpirationTime = DateTimeOffset.UtcNow.AddYears(1);
         private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
 
         public byte[] ResolveKey(Guid keyId)

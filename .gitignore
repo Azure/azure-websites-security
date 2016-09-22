@@ -9,6 +9,7 @@ Publish
 *.suo
 *.cscfg
 *.Cache
+project.lock.json
 
 /packages
 /TestResults

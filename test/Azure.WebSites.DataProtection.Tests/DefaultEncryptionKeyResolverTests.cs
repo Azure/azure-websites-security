@@ -20,7 +20,7 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
                 IReadOnlyCollection<CryptographicKey> keys = resolver.GetAllKeys();
 
                 Assert.Equal(1, keys.Count);
-                Assert.Equal(Guid.Empty.ToString(), keys.First().Id);
+                Assert.Equal(Guid.Empty, keys.First().Id);
                 Assert.Equal(CryptoUtil.ConvertHexToByteArray(keyValue), keys.First().Value);
             }
         }
@@ -30,12 +30,12 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
         {
             var resolver = new DefaultEncryptionKeyResolver();
 
-            string keyId = "ae67b5ee-aa29-44a4-85ac-fc7137cb44ce";
+            Guid keyId = Guid.Parse("ae67b5ee-aa29-44a4-85ac-fc7137cb44ce");
             string keyValue = "0F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248";
             var environmentVariables = new Dictionary<string, string>
             {
-                { Constants.AzureWebsitePrimaryEncryptionKeyId,   keyId},
-                { $"AzureWebEncryptionKey_{keyId}", keyValue },
+                { Constants.AzureWebsitePrimaryEncryptionKeyId, keyId.ToString()},
+                { $"{Constants.AzureWebReferencedKeyPrefix}{keyId}", keyValue },
 
             };
 
@@ -48,7 +48,7 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
                 Assert.Equal(CryptoUtil.ConvertHexToByteArray(keyValue), keys.First().Value);
                 
                 // Default key is included
-                Assert.Equal(Guid.Empty.ToString(), keys.Skip(1).First().Id);
+                Assert.Equal(Guid.Empty, keys.Skip(1).First().Id);
             }
         }
 
@@ -57,16 +57,16 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
         {
             var resolver = new DefaultEncryptionKeyResolver();
 
-            string primakeyId = "ae67b5ee-aa29-44a4-85ac-fc7137cb44ce";
+            Guid primakeyId = Guid.Parse("ae67b5ee-aa29-44a4-85ac-fc7137cb44ce");
             string primaryKeyValue = "0F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248";
-            string secondaryId = "be67b5ee-aa29-44a4-85ac-fc7137cb44ce";
+            Guid secondaryId = Guid.Parse("be67b5ee-aa29-44a4-85ac-fc7137cb44ce");
             string secondaryKeyValue = "1F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248";
             var environmentVariables = new Dictionary<string, string>
             {
-                { Constants.AzureWebsitePrimaryEncryptionKeyId,   primakeyId},
-                { $"AzureWebEncryptionKey_{primakeyId}", primaryKeyValue },
-                { Constants.AzureWebsiteSecondaryEncryptionKeyId,   secondaryId},
-                { $"AzureWebEncryptionKey_{secondaryId}", secondaryKeyValue }
+                { Constants.AzureWebsitePrimaryEncryptionKeyId, primakeyId.ToString()},
+                { $"{Constants.AzureWebReferencedKeyPrefix}{primakeyId}", primaryKeyValue },
+                { Constants.AzureWebsiteSecondaryEncryptionKeyId, secondaryId.ToString()},
+                { $"{Constants.AzureWebReferencedKeyPrefix}{secondaryId}", secondaryKeyValue }
             };
 
             using (var variables = new TestScopedEnvironmentVariable(environmentVariables))

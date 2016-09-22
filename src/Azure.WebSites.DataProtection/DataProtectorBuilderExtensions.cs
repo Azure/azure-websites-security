@@ -10,6 +10,7 @@ namespace Microsoft.Azure.Web.DataProtection
         public static IDataProtectionBuilder UseAzureWebsitesProviderSettings(this IDataProtectionBuilder builder)
         {
             builder.DisableAutomaticKeyGeneration();
+            builder.SetDefaultKeyLifetime(TimeSpan.MaxValue);
             builder.Services.AddSingleton<IKeyManager, AzureWebsitesKeyManager>();
 
             return builder;

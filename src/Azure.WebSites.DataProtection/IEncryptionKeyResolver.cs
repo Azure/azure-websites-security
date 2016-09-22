@@ -2,11 +2,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
     public interface IEncryptionKeyResolver
     {
-        byte[] ResolveKey(string keyId);
+        byte[] ResolveKey(Guid keyId);
+
+        IReadOnlyCollection<CryptographicKey> GetAllKeys();
     }
 }

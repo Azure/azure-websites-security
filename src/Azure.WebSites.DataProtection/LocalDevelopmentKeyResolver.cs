@@ -11,7 +11,7 @@ namespace Microsoft.Azure.Web.DataProtection
 {
     public class LocalDevelopmentKeyResolver : IEncryptionKeyResolver
     {
-        private readonly Dictionary<string, byte[]> _keys = new Dictionary<string, byte[]>();
+        private readonly Dictionary<Guid, byte[]> _keys = new Dictionary<Guid, byte[]>();
         
         /// <summary>
         /// Initializes a new instance of a <see cref="LocalDevelopmentKeyResolver"/> with a new, random key.
@@ -37,15 +37,20 @@ namespace Microsoft.Azure.Web.DataProtection
         /// <param name="testKey">The key to be used by the key resolver.</param>
         public LocalDevelopmentKeyResolver(byte[] testKey)
         {
-            _keys.Add(DefaultEncryptionKeyId, testKey);
+            _keys.Add(Guid.Parse(DefaultEncryptionKeyId), testKey);
         }
 
-        public byte[] ResolveKey(string keyId)
+        public byte[] ResolveKey(Guid keyId)
         {
             byte[] result;
             _keys.TryGetValue(keyId, out result);
 
             return result;
+        }
+
+        public IReadOnlyCollection<CryptographicKey> GetAllKeys()
+        {
+            return _keys.Select(kv => new CryptographicKey(kv.Key, kv.Value)).ToList().AsReadOnly();
         }
     }
 }

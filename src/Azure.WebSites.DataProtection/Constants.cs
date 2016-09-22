@@ -9,10 +9,12 @@ namespace Microsoft.Azure.Web.DataProtection
     {
         public const string AzureWebsiteName = "WEBSITE_SITE_NAME";
         public const string AzureWebsiteInstanceId = "WEBSITE_INSTANCE_ID";
-        public const string AzureWebsiteEncryptionKey = "WEBSITE_AUTH_ENCRYPTION_KEY";
+        public const string AzureWebsitePrimaryEncryptionKeyId = "AzureWebPrimaryEncryptionKey";
+        public const string AzureWebsiteSecondaryEncryptionKeyId = "AzureWebSecondaryEncryptionKey";
         public const string AzureWebsiteLocalEncryptionKey = "AzureWebEncryptionKey";
         public const string AzureWebsiteEncryptionKeyId = "AzureWebDefaultEncryptionKeyId";
         internal const string RootWebConfigPath = @"D:\local\config\rootweb.config";
         internal const string DefaultEncryptionKeyId = "00000000-0000-0000-0000-000000000000";
+        internal const string AzureWebReferencedKeyPrefix = "AzureWebEncryptionKey_";
     }
 }

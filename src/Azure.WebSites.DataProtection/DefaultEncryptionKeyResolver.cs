@@ -3,23 +3,25 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using static Microsoft.Azure.Web.DataProtection.Constants;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {
-        private static readonly string[] DefaultKeyIdMappings = new[] { DefaultEncryptionKeyId, AzureWebsiteEncryptionKey };
+        private static DateTimeOffset BaseCreationTime = DateTimeOffset.UtcNow.AddYears(-1);
+        private static DateTimeOffset BaseExpirationTime = DateTimeOffset.UtcNow.AddYears(1);
+        private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
 
-        public byte[] ResolveKey(string keyId) => string.IsNullOrEmpty(keyId) ? GetCurrentKey() : GetNamedKey(keyId);
-
-        private byte[] GetNamedKey(string keyId)
+        public byte[] ResolveKey(Guid keyId)
         {
-            string keyValue = IsDefaultKey(keyId) ? GetDefaultKeyValue() : Environment.GetEnvironmentVariable(keyId);
+            string keyValue = IsDefaultKey(keyId) ? GetDefaultKeyValue() : GetEnvironmentKey(keyId);
 
             if (keyValue != null)
             {
@@ -29,27 +31,67 @@ namespace Microsoft.Azure.Web.DataProtection
             return null;
         }
 
-        private byte[] GetCurrentKey()
+        public IReadOnlyCollection<CryptographicKey> GetAllKeys()
         {
-            string keyId = Environment.GetEnvironmentVariable(AzureWebsiteEncryptionKeyId);
+            var keys = new List<CryptographicKey>();
 
-            if (keyId != null)
+            CryptographicKey primaryKey = GetReferencedKey(AzureWebsitePrimaryEncryptionKeyId);
+
+            if (primaryKey != null)
             {
-                return GetNamedKey(keyId);
+                keys.Add(primaryKey);
+
+                CryptographicKey secondaryKey = GetReferencedKey(AzureWebsiteSecondaryEncryptionKeyId);
+
+                if (secondaryKey != null)
+                {
+                    keys.Add(secondaryKey);
+                }
             }
 
-            return GetDefaultKey();
+            if (keys.Count < 2)
+            {
+                var defaultKey = new CryptographicKey(DefaultKeyId, GetDefaultKey());
+
+                keys.Add(defaultKey);
+            }
+
+            return keys.AsReadOnly();
         }
+
+        private CryptographicKey GetReferencedKey(string reference)
+        {
+            try
+            {
+                Guid keyId;
+                if (Guid.TryParse(Environment.GetEnvironmentVariable(reference), out keyId))
+                {
+                    string value = Environment.GetEnvironmentVariable(GetKeySettingName(keyId));
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        return new CryptographicKey(keyId, CryptoUtil.ConvertHexToByteArray(value));
+                    }
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+        private string GetEnvironmentKey(Guid keyId) => Environment.GetEnvironmentVariable(GetKeySettingName(keyId));
+
+        private string GetKeySettingName(Guid keyId) => $"{AzureWebReferencedKeyPrefix}{keyId}";
 
         private byte[] GetDefaultKey()
         {
-            
-                string keyValue = GetDefaultKeyValue();
+            string keyValue = GetDefaultKeyValue();
 
-                if (keyValue != null)
-                {
-                 return   CryptoUtil.ConvertHexToByteArray(keyValue);
-                }
+            if (keyValue != null)
+            {
+                return CryptoUtil.ConvertHexToByteArray(keyValue);
+            }
+
             return null;
         }
 
@@ -59,7 +101,7 @@ namespace Microsoft.Azure.Web.DataProtection
             {
                 // If running in Azure, try to pull the key from the environment
                 // and fallback to config file if not available
-                return Environment.GetEnvironmentVariable(AzureWebsiteEncryptionKey) ?? GetMachineConfigKey();
+                return GetMachineConfigKey();
             }
 
             return Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey);
@@ -67,7 +109,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(AzureWebsiteInstanceId) != null;
 
-        private static bool IsDefaultKey(string keyName) => DefaultKeyIdMappings.Contains(keyName, StringComparer.OrdinalIgnoreCase);
+        private static bool IsDefaultKey(Guid keyId) => DefaultKeyId == keyId;
 
 
         private static string GetMachineConfigKey()
@@ -95,6 +137,5 @@ namespace Microsoft.Azure.Web.DataProtection
             //return key;
 #endif
         }
-
     }
 }

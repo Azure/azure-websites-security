@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
-    public static class CryptoUtil
+    public static class Util
     {
         public static byte[] ConvertHexToByteArray(string keyValue) 
             => Enumerable.Range(0, keyValue.Length / 2)
             .Select(b => Convert.ToByte(keyValue.Substring(b * 2, 2), 16))
             .ToArray();
+
+        public static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(Constants.AzureWebsiteInstanceId) != null;
 
         internal static byte[] CreateKey()
         {

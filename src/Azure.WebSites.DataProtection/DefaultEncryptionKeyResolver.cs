@@ -92,10 +92,6 @@ namespace Microsoft.Azure.Web.DataProtection
             return null;
         }
 
-        private string GetEnvironmentKey(Guid keyId) => Environment.GetEnvironmentVariable(GetKeySettingName(keyId));
-
-        private string GetKeySettingName(Guid keyId) => $"{AzureWebReferencedKeyPrefix}{keyId}";
-
         private byte[] GetDefaultKey()
         {
             string keyValue = GetDefaultKeyValue();
@@ -108,22 +104,15 @@ namespace Microsoft.Azure.Web.DataProtection
             return null;
         }
 
-        private string GetDefaultKeyValue()
-        {
-            if (IsAzureEnvironment())
-            {
-                // If running in Azure, try to pull the key from the environment
-                // and fallback to config file if not available
-                return GetMachineConfigKey();
-            }
+        private string GetEnvironmentKey(Guid keyId) => Environment.GetEnvironmentVariable(GetKeySettingName(keyId));
 
-            return Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey);
-        }
+        private string GetKeySettingName(Guid keyId) => $"{AzureWebReferencedKeyPrefix}{keyId}";
+
+        private string GetDefaultKeyValue() => Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey) ?? GetMachineConfigKey();
 
         private static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(AzureWebsiteInstanceId) != null;
 
         private static bool IsDefaultKey(Guid keyId) => DefaultKeyId == keyId;
-
 
         private static string GetMachineConfigKey()
         {
@@ -131,9 +120,9 @@ namespace Microsoft.Azure.Web.DataProtection
             return ((System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey")).DecryptionKey;
 #elif NETSTANDARD1_3
             const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
-
             string key = null;
-            if (File.Exists(RootWebConfigPath))
+
+            if (IsAzureEnvironment() && File.Exists(RootWebConfigPath))
             {
                 using (var reader = new StringReader(File.ReadAllText(RootWebConfigPath)))
                 {

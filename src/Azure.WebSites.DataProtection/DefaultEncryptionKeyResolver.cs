@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using static Microsoft.Azure.Web.DataProtection.Constants;
 
@@ -16,6 +18,7 @@ namespace Microsoft.Azure.Web.DataProtection
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {
         private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
+        private static readonly Regex _keySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}[0-9A-Fa-f](?<name>{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
 
         public byte[] ResolveKey(Guid keyId)
         {
@@ -38,22 +41,34 @@ namespace Microsoft.Azure.Web.DataProtection
             if (primaryKey != null)
             {
                 keys.Add(primaryKey);
-
-                CryptographicKey secondaryKey = GetReferencedKey(AzureWebsiteSecondaryEncryptionKeyId);
-
-                if (secondaryKey != null)
-                {
-                    keys.Add(secondaryKey);
-                }
             }
 
-            if (keys.Count < 2)
+            // Add our default key. If a primary key is not specified, this implicitely becomes
+            // the primary (default) key.
+            byte[] defaultKeyValue = GetDefaultKey();
+            if (defaultKeyValue != null)
             {
-                var defaultKey = new CryptographicKey(DefaultKeyId, GetDefaultKey());
-
+                var defaultKey = new CryptographicKey(DefaultKeyId, defaultKeyValue);
                 keys.Add(defaultKey);
             }
 
+            // Get other defined keys
+            var definedKeys = Environment.GetEnvironmentVariables();
+
+            foreach (var key in definedKeys.Keys)
+            {
+                Guid keyId;
+                Match match = _keySettingNameRegex.Match(key.ToString());
+                if (match.Success && Guid.TryParse(match.Groups["keyid"].Value, out keyId))
+                {
+                    byte[] value = CryptoUtil.ConvertHexToByteArray(definedKeys[key].ToString());
+
+                    var cryptoKey = new CryptographicKey(keyId, value);
+
+                    keys.Add(cryptoKey);
+                }
+            }
+            
             return keys.AsReadOnly();
         }
 
@@ -115,24 +130,23 @@ namespace Microsoft.Azure.Web.DataProtection
 #if NET46
             return ((System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey")).DecryptionKey;
 #elif NETSTANDARD1_3
-            //const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
+            const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
 
-            return string.Empty;
-            //string key = null;
-            //if (File.Exists(configPath))
-            //{
-            //    using (var reader = new StringReader(File.ReadAllText(configPath)))
-            //    {
-            //        var xdoc = XDocument.Load(reader);
+            string key = null;
+            if (File.Exists(RootWebConfigPath))
+            {
+                using (var reader = new StringReader(File.ReadAllText(RootWebConfigPath)))
+                {
+                    var xdoc = XDocument.Load(reader);
 
-            //        string siteName = Environment.GetEnvironmentVariable(Constants.AzureWebsiteName);
-            //        string xpath = string.Format(CultureInfo.InvariantCulture, MachingKeyXPathFormat, siteName);
+                    string siteName = Environment.GetEnvironmentVariable(AzureWebsiteName);
+                    string xpath = string.Format(CultureInfo.InvariantCulture, MachingKeyXPathFormat, siteName);
 
-            //        key = ((IEnumerable)xdoc..XPathEvaluate(xpath)).Cast<XAttribute>().FirstOrDefault()?.Value;
-            //    }
-            //}
+                    key = ((IEnumerable)xdoc.XPathEvaluate(xpath)).Cast<XAttribute>().FirstOrDefault()?.Value;
+                }
+            }
 
-            //return key;
+            return key;
 #endif
         }
     }

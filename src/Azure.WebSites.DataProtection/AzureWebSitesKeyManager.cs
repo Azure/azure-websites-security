@@ -35,11 +35,6 @@ namespace Microsoft.Azure.Web.DataProtection
             _services = services;
         }
 
-        public IKey CreateNewKey(DateTimeOffset activationDate, DateTimeOffset expirationDate)
-        {
-            throw new NotSupportedException($"The '{nameof(AzureWebsitesKeyManager)}' does not support key creation.");
-        }
-
         public IReadOnlyCollection<IKey> GetAllKeys()
         {
             IReadOnlyCollection<CryptographicKey> keys = _keyResolver.GetAllKeys();
@@ -59,14 +54,19 @@ namespace Microsoft.Azure.Web.DataProtection
             return CancellationToken.None;
         }
 
+        public IKey CreateNewKey(DateTimeOffset activationDate, DateTimeOffset expirationDate)
+        {
+            throw new NotSupportedException($"The '{nameof(AzureWebsitesKeyManager)}' does not support key creation.");
+        }
+
         public void RevokeAllKeys(DateTimeOffset revocationDate, string reason = null)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException($"The '{nameof(AzureWebsitesKeyManager)}' does not support key revocation.");
         }
 
         public void RevokeKey(Guid keyId, string reason = null)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException($"The '{nameof(AzureWebsitesKeyManager)}' does not support key revocation.");
         }
     }
 }

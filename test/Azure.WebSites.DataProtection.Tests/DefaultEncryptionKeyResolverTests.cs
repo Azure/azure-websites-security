@@ -34,6 +34,7 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
             string keyValue = "0F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248";
             var environmentVariables = new Dictionary<string, string>
             {
+                { Constants.AzureWebsiteLocalEncryptionKey, "1F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248"},
                 { Constants.AzureWebsitePrimaryEncryptionKeyId, keyId.ToString()},
                 { $"{Constants.AzureWebReferencedKeyPrefix}{keyId}", keyValue },
 

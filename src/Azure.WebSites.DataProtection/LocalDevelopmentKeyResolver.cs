@@ -17,7 +17,7 @@ namespace Microsoft.Azure.Web.DataProtection
         /// Initializes a new instance of a <see cref="LocalDevelopmentKeyResolver"/> with a new, random key.
         /// </summary>
         public LocalDevelopmentKeyResolver()
-            : this(CryptoUtil.CreateKey())
+            : this(Util.CreateKey())
         {
             
         }
@@ -27,7 +27,7 @@ namespace Microsoft.Azure.Web.DataProtection
         /// </summary>
         /// <param name="testKey">The hexadecimal string representation of the key to be used by the key resolver</param>
         public LocalDevelopmentKeyResolver(string testKey)
-            : this(CryptoUtil.ConvertHexToByteArray(testKey))
+            : this(Util.ConvertHexToByteArray(testKey))
         {
         }
 

@@ -26,7 +26,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
             if (keyValue != null)
             {
-                return CryptoUtil.ConvertHexToByteArray(keyValue);
+                return Util.ConvertHexToByteArray(keyValue);
             }
 
             return null;
@@ -61,14 +61,14 @@ namespace Microsoft.Azure.Web.DataProtection
                 Match match = _keySettingNameRegex.Match(key.ToString());
                 if (match.Success && Guid.TryParse(match.Groups["keyid"].Value, out keyId) && !keys.Any(k => k.Id == keyId))
                 {
-                    byte[] value = CryptoUtil.ConvertHexToByteArray(definedKeys[key].ToString());
+                    byte[] value = Util.ConvertHexToByteArray(definedKeys[key].ToString());
 
                     var cryptoKey = new CryptographicKey(keyId, value);
 
                     keys.Add(cryptoKey);
                 }
             }
-            
+
             return keys.AsReadOnly();
         }
 
@@ -83,7 +83,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        return new CryptographicKey(keyId, CryptoUtil.ConvertHexToByteArray(value));
+                        return new CryptographicKey(keyId, Util.ConvertHexToByteArray(value));
                     }
                 }
             }
@@ -98,7 +98,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
             if (keyValue != null)
             {
-                return CryptoUtil.ConvertHexToByteArray(keyValue);
+                return Util.ConvertHexToByteArray(keyValue);
             }
 
             return null;
@@ -110,19 +110,26 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private string GetDefaultKeyValue() => Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey) ?? GetMachineConfigKey();
 
-        private static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(AzureWebsiteInstanceId) != null;
-
         private static bool IsDefaultKey(Guid keyId) => DefaultKeyId == keyId;
 
         private static string GetMachineConfigKey()
         {
 #if NET46
-            return ((System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey")).DecryptionKey;
+            string key = ((System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey")).DecryptionKey;
+
+            // This will not happen when hosted in Azure App Service.
+            if (!string.IsNullOrEmpty(key) && (key.IndexOf("AutoGenerate") != -1 || key.IndexOf("IsolateApps") != -1))
+            {
+                return null;
+            }
+
+            return key;
+
 #elif NETSTANDARD1_3
             const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
             string key = null;
 
-            if (IsAzureEnvironment() && File.Exists(RootWebConfigPath))
+            if (Util.IsAzureEnvironment() && File.Exists(RootWebConfigPath))
             {
                 using (var reader = new StringReader(File.ReadAllText(RootWebConfigPath)))
                 {

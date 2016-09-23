@@ -7,11 +7,14 @@ namespace Microsoft.Azure.Web.DataProtection
 {
     public static class DataProtectorBuilderExtensions
     {
-        public static IDataProtectionBuilder UseAzureWebsitesProviderSettings(this IDataProtectionBuilder builder)
+        public static IDataProtectionBuilder UseAzureWebsitesProviderSettings(this IDataProtectionBuilder builder, bool validateEnvironment = true)
         {
-            builder.DisableAutomaticKeyGeneration();
-            builder.SetDefaultKeyLifetime(TimeSpan.MaxValue);
-            builder.Services.AddSingleton<IKeyManager, AzureWebsitesKeyManager>();
+            if (validateEnvironment && Util.IsAzureEnvironment())
+            {
+                builder.DisableAutomaticKeyGeneration();
+                builder.SetDefaultKeyLifetime(TimeSpan.MaxValue);
+                builder.Services.AddSingleton<IKeyManager, AzureWebsitesKeyManager>();
+            }
 
             return builder;
         }

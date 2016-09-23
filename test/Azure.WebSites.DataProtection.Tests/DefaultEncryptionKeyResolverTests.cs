@@ -21,7 +21,7 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
 
                 Assert.Equal(1, keys.Count);
                 Assert.Equal(Guid.Empty, keys.First().Id);
-                Assert.Equal(CryptoUtil.ConvertHexToByteArray(keyValue), keys.First().Value);
+                Assert.Equal(Util.ConvertHexToByteArray(keyValue), keys.First().Value);
             }
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
 
                 Assert.Equal(2, keys.Count);
                 Assert.Equal(keyId, keys.First().Id);
-                Assert.Equal(CryptoUtil.ConvertHexToByteArray(keyValue), keys.First().Value);
+                Assert.Equal(Util.ConvertHexToByteArray(keyValue), keys.First().Value);
                 
                 // Default key is included
                 Assert.Equal(Guid.Empty, keys.Skip(1).First().Id);
@@ -75,9 +75,9 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
 
                 Assert.Equal(2, keys.Count);
                 Assert.Equal(primakeyId, keys.First().Id);
-                Assert.Equal(CryptoUtil.ConvertHexToByteArray(primaryKeyValue), keys.First().Value);                
+                Assert.Equal(Util.ConvertHexToByteArray(primaryKeyValue), keys.First().Value);                
                 Assert.Equal(secondaryId, keys.Skip(1).First().Id);
-                Assert.Equal(CryptoUtil.ConvertHexToByteArray(secondaryKeyValue), keys.Skip(1).First().Value);
+                Assert.Equal(Util.ConvertHexToByteArray(secondaryKeyValue), keys.Skip(1).First().Value);
             }
         }
     }

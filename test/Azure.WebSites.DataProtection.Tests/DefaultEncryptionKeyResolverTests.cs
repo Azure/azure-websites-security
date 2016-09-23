@@ -65,7 +65,6 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
             {
                 { Constants.AzureWebsitePrimaryEncryptionKeyId, primakeyId.ToString()},
                 { $"{Constants.AzureWebReferencedKeyPrefix}{primakeyId}", primaryKeyValue },
-                { Constants.AzureWebsiteSecondaryEncryptionKeyId, secondaryId.ToString()},
                 { $"{Constants.AzureWebReferencedKeyPrefix}{secondaryId}", secondaryKeyValue }
             };
 

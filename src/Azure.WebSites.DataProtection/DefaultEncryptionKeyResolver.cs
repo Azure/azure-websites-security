@@ -18,7 +18,7 @@ namespace Microsoft.Azure.Web.DataProtection
     public class DefaultEncryptionKeyResolver : IEncryptionKeyResolver
     {
         private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
-        private static readonly Regex _keySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}[0-9A-Fa-f](?<name>{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
+        private static readonly Regex _keySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}(?<keyid>[0-9A-Fa-f]{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
 
         public byte[] ResolveKey(Guid keyId)
         {
@@ -59,7 +59,7 @@ namespace Microsoft.Azure.Web.DataProtection
             {
                 Guid keyId;
                 Match match = _keySettingNameRegex.Match(key.ToString());
-                if (match.Success && Guid.TryParse(match.Groups["keyid"].Value, out keyId))
+                if (match.Success && Guid.TryParse(match.Groups["keyid"].Value, out keyId) && !keys.Any(k => k.Id == keyId))
                 {
                     byte[] value = CryptoUtil.ConvertHexToByteArray(definedKeys[key].ToString());
 

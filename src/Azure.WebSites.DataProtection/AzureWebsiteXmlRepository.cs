@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,8 +17,6 @@ namespace Microsoft.Azure.Web.DataProtection
     public class AzureWebsiteXmlRepository : IXmlRepository
     {
         private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
-        private static readonly Regex _keySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}(?<keyid>[0-9A-Fa-f]{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
-
         internal static readonly XName KeyElementName = "key";
         internal static readonly XName IdAttributeName = "id";
         internal static readonly XName VersionAttributeName = "version";
@@ -25,20 +25,19 @@ namespace Microsoft.Azure.Web.DataProtection
         internal static readonly XName ExpirationDateElementName = "expirationDate";
         internal static readonly XName DescriptorElementName = "descriptor";
         internal static readonly XName DeserializerTypeAttributeName = "deserializerType";
-        internal static readonly XName RevocationElementName = "revocation";
-        internal static readonly XName RevocationDateElementName = "revocationDate";
-        internal static readonly XName ReasonElementName = "reason";
+        private static readonly Regex _keySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}(?<keyid>[0-9A-Fa-f]{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
+
         private readonly IAuthenticatedEncryptorConfiguration _encryptorConfiguration;
 
         public AzureWebsiteXmlRepository(IAuthenticatedEncryptorConfiguration encryptorConfiguration)
         {
             _encryptorConfiguration = encryptorConfiguration;
         }
+ 
         public void StoreElement(XElement element, string friendlyName)
         {
             throw new NotSupportedException();
         }
-
      
         public byte[] ResolveKey(Guid keyId)
         {
@@ -63,7 +62,7 @@ namespace Microsoft.Azure.Web.DataProtection
                 keys.Add(primaryKey);
             }
 
-            // Add our default key. If a primary key is not specified, this implicitely becomes
+            // Add our default key. If a primary key is not specified, this implicitly becomes
             // the primary (default) key.
             byte[] defaultKeyValue = GetDefaultKey();
             if (defaultKeyValue != null)
@@ -91,23 +90,25 @@ namespace Microsoft.Azure.Web.DataProtection
 
             
 
-            return keys.Select(k => new XElement(KeyElementName,
+            return keys.Select(k => CreateKeyElement(k))
+                .ToList()
+                .AsReadOnly();
+        }
+
+        private XElement CreateKeyElement(CryptographicKey k)
+        {
+            var newDescriptor = _encryptorConfiguration.CreateNewDescriptor();
+            var descriptor = newDescriptor.ExportToXml();
+  
+            return new XElement(KeyElementName,
                 new XAttribute(IdAttributeName, k.Id), 
                 new XAttribute(VersionAttributeName, 1),
                 new XElement(CreationDateElementName, DateTimeOffset.UtcNow),
                 new XElement(ActivationDateElementName, DateTimeOffset.UtcNow),
                 new XElement(ExpirationDateElementName, DateTimeOffset.UtcNow.AddYears(10)),
                 new XElement(DescriptorElementName,
-                new XAttribute(DeserializerTypeAttributeName, CreateSerializedDescryptor() descriptorXmlInfo.DeserializerType.AssemblyQualifiedName),
-                descriptorXmlInfo.SerializedDescriptorElement)))
-                .ToList()
-                .AsReadOnly();
-        }
-
-        private XmlSerializedDescriptorInfo CreateSerializedDescryptor()
-        {
-            var newDescriptor = _encryptorConfiguration.CreateNewDescriptor();
-            return newDescriptor.ExportToXml();
+                    new XAttribute(DeserializerTypeAttributeName, descriptor.DeserializerType.AssemblyQualifiedName), 
+                    descriptor.SerializedDescriptorElement));
         }
 
         private CryptographicKey GetReferencedKey(string reference)

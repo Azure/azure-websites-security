@@ -16,16 +16,6 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
         public void GetAllKeys_WithNoKeysSet_ReturnsDefaultKey()
         {
             var configuration = new AuthenticatedEncryptorConfiguration(new AuthenticatedEncryptionSettings());
-            var authConfigMock = new Mock<IAuthenticatedEncryptorConfiguration>();
-
-            var deserializerMock = new Mock<IAuthenticatedEncryptorDescriptorDeserializer>();
-
-            var descriptorMock = new Mock<IAuthenticatedEncryptorDescriptor>();
-            descriptorMock.Setup(t => t.ExportToXml())
-                .Returns(new XmlSerializedDescriptorInfo(new XElement("Test"), deserializerMock.Object.GetType()));
-
-            authConfigMock.Setup(m=> m.CreateNewDescriptor()).Returns(descriptorMock.Object);
-
             var resolver = new AzureWebsitesXmlRepository(configuration);
             string keyValue = "0F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248";
 

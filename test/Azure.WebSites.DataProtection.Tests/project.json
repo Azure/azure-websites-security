@@ -16,8 +16,8 @@
       "version": "0.1.6-*",
       "target": "project"
     },
-     "Microsoft.AspNetCore.DataProtection": "1.0.0"
-    },
+    "Microsoft.AspNetCore.DataProtection": "1.0.0"
+  },
   "testRunner": "xunit",
  "frameworks": {
     "netcoreapp1.0": {

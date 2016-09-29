@@ -1,38 +1,23 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+using System;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
     public static class DataProtectorBuilderExtensions
     {
-        public static IDataProtectionBuilder UseAzureWebsitesProviderSettings(this IDataProtectionBuilder builder, bool validateEnvironment = true)
+        public static IDataProtectionBuilder UseAzureWebsitesProviderSettings(this IDataProtectionBuilder builder, bool skipEnvironmentValidation = false)
         {
-            if (validateEnvironment && Util.IsAzureEnvironment())
+            if (skipEnvironmentValidation || Util.IsAzureEnvironment())
             {
                 builder.DisableAutomaticKeyGeneration();
                 builder.SetDefaultKeyLifetime(TimeSpan.MaxValue);
-                builder.Services.AddSingleton<IKeyManager, AzureWebsitesKeyManager>();
+                builder.Services.AddSingleton<IXmlRepository, AzureWebsitesXmlRepository>();
             }
-
-            return builder;
-        }
-
-        public static IDataProtectionBuilder WithLocalDevelopmentKeyResolver(this IDataProtectionBuilder builder)
-            => WithCustomEncryptionKeyResolver(builder, s => new LocalDevelopmentKeyResolver());
-
-   
-        public static IDataProtectionBuilder WithLocalDevelopmentKeyResolver(this IDataProtectionBuilder builder, string testKey)
-            => WithCustomEncryptionKeyResolver(builder, s => new LocalDevelopmentKeyResolver(testKey));
-
-        
-        public static IDataProtectionBuilder WithLocalDevelopmentKeyResolver(this IDataProtectionBuilder builder, byte[] testKey)
-            => WithCustomEncryptionKeyResolver(builder, s => new LocalDevelopmentKeyResolver(testKey));
-
-        public static IDataProtectionBuilder WithCustomEncryptionKeyResolver(this IDataProtectionBuilder builder, Func<IServiceProvider, IEncryptionKeyResolver> resolverFactory)
-        {
-            builder.Services.AddSingleton(resolverFactory);
 
             return builder;
         }

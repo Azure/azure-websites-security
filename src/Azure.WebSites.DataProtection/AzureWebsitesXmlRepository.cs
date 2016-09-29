@@ -8,15 +8,15 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using static Microsoft.Azure.Web.DataProtection.Constants;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
-    public class AzureWebsiteXmlRepository : IXmlRepository
+    public class AzureWebsitesXmlRepository : IXmlRepository
     {
-        private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
         internal static readonly XName KeyElementName = "key";
         internal static readonly XName IdAttributeName = "id";
         internal static readonly XName VersionAttributeName = "version";
@@ -25,13 +25,15 @@ namespace Microsoft.Azure.Web.DataProtection
         internal static readonly XName ExpirationDateElementName = "expirationDate";
         internal static readonly XName DescriptorElementName = "descriptor";
         internal static readonly XName DeserializerTypeAttributeName = "deserializerType";
-        private static readonly Regex _keySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}(?<keyid>[0-9A-Fa-f]{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
+        private static readonly Regex KeySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}(?<keyid>[0-9A-Fa-f]{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
 
-        private readonly IAuthenticatedEncryptorConfiguration _encryptorConfiguration;
+        private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
 
-        public AzureWebsiteXmlRepository(IAuthenticatedEncryptorConfiguration encryptorConfiguration)
+        private readonly AuthenticatedEncryptorConfiguration _encryptorConfiguration;
+
+        public AzureWebsitesXmlRepository(IAuthenticatedEncryptorConfiguration encryptorConfiguration)
         {
-            _encryptorConfiguration = encryptorConfiguration;
+            _encryptorConfiguration = encryptorConfiguration as AuthenticatedEncryptorConfiguration;
         }
  
         public void StoreElement(XElement element, string friendlyName)
@@ -77,7 +79,7 @@ namespace Microsoft.Azure.Web.DataProtection
             foreach (var key in definedKeys.Keys)
             {
                 Guid keyId;
-                Match match = _keySettingNameRegex.Match(key.ToString());
+                Match match = KeySettingNameRegex.Match(key.ToString());
                 if (match.Success && Guid.TryParse(match.Groups["keyid"].Value, out keyId) && !keys.Any(k => k.Id == keyId))
                 {
                     byte[] value = Util.ConvertHexToByteArray(definedKeys[key].ToString());
@@ -88,23 +90,21 @@ namespace Microsoft.Azure.Web.DataProtection
                 }
             }
 
-            
-
-            return keys.Select(k => CreateKeyElement(k))
+            return keys.Select((k, i) => CreateKeyElement(k, i))
                 .ToList()
                 .AsReadOnly();
         }
 
-        private XElement CreateKeyElement(CryptographicKey k)
+        private XElement CreateKeyElement(CryptographicKey k, int position)
         {
-            var newDescriptor = _encryptorConfiguration.CreateNewDescriptor();
+            var newDescriptor = new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(k.Value));
             var descriptor = newDescriptor.ExportToXml();
   
             return new XElement(KeyElementName,
                 new XAttribute(IdAttributeName, k.Id), 
                 new XAttribute(VersionAttributeName, 1),
-                new XElement(CreationDateElementName, DateTimeOffset.UtcNow),
-                new XElement(ActivationDateElementName, DateTimeOffset.UtcNow),
+                new XElement(CreationDateElementName, DateTimeOffset.UtcNow.AddMinutes(-position)),
+                new XElement(ActivationDateElementName, DateTimeOffset.UtcNow.AddMinutes(-position)),
                 new XElement(ExpirationDateElementName, DateTimeOffset.UtcNow.AddYears(10)),
                 new XElement(DescriptorElementName,
                     new XAttribute(DeserializerTypeAttributeName, descriptor.DeserializerType.AssemblyQualifiedName), 

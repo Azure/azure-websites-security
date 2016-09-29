@@ -11,9 +11,14 @@ namespace Microsoft.Azure.Web.DataProtection
     {
         public static IDataProtectionProvider CreateAzureDataProtector(Action<IDataProtectionBuilder> configurationHandler = null)
         {
+            return CreateAzureDataProtector(configurationHandler);
+        }
+
+        public static IDataProtectionProvider CreateAzureDataProtector(Action<IDataProtectionBuilder> configurationHandler = null, bool skipEnvironmentValidation = false)
+        {
             var serviceCollection = new ServiceCollection();
             var builder = serviceCollection.AddDataProtection()
-                .UseAzureWebsitesProviderSettings();
+                .UseAzureWebsitesProviderSettings(skipEnvironmentValidation);
 
             configurationHandler?.Invoke(builder);
 

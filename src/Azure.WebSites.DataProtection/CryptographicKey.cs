@@ -17,7 +17,5 @@ namespace Microsoft.Azure.Web.DataProtection
         public Guid Id { get; }
 
         public byte[] Value { get; }
-
-        public XmlSerializedDescriptorInfo SerializedDescriptor { get; set; }
     }
 }

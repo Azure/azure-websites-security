@@ -1,0 +1,27 @@
+{
+
+  "title": "Microsoft.Azure.Websites.DataProtection",
+  "name": "Microsoft.Azure.WebSites.DataProtection",
+  "version": "0.1.6-*",
+
+  "dependencies": {
+    "Microsoft.AspNetCore.DataProtection": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "dependencies": {
+        "System.Xml.XPath": "4.0.1",
+        "System.Text.RegularExpressions": "4.1.0",
+        "System.Xml.XPath.XDocument": "4.0.1"
+      }
+    },
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0",
+        "System.Web": "4.0.0.0"
+      }
+    }
+  }
+}

@@ -153,19 +153,6 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private static string GetMachineConfigKey()
         {
-#if NET46
-            string key = ((System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey")).DecryptionKey;
-
-            // This will not happen when hosted in Azure App Service.
-            if (!string.IsNullOrEmpty(key) && (key.IndexOf("AutoGenerate") != -1 || key.IndexOf("IsolateApps") != -1))
-            {
-                return null;
-            }
-
-            return key;
-
-#elif NETSTANDARD1_3
-            const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
             string key = null;
 
             if (Util.IsAzureEnvironment() && File.Exists(RootWebConfigPath))
@@ -182,7 +169,6 @@ namespace Microsoft.Azure.Web.DataProtection
             }
 
             return key;
-#endif
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Web.DataProtection
     {
         public static IDataProtectionProvider CreateAzureDataProtector(Action<IDataProtectionBuilder> configurationHandler = null)
         {
-            return CreateAzureDataProtector(configurationHandler);
+            return CreateAzureDataProtector(configurationHandler, false);
         }
 
         public static IDataProtectionProvider CreateAzureDataProtector(Action<IDataProtectionBuilder> configurationHandler, bool skipEnvironmentValidation = false)

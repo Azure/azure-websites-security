@@ -14,5 +14,6 @@ namespace Microsoft.Azure.Web.DataProtection
         public const string AzureWebReferencedKeyPrefix = "AzureWebEncryptionKey_";
         public const string DefaultEncryptionKeyId = "00000000-0000-0000-0000-000000000000";
         internal const string RootWebConfigPath = @"D:\local\config\rootweb.config";
+        internal const string MachingKeyXPathFormat = "configuration/location[@path='{0}']/system.web/machineKey/@decryptionKey";
     }
 }

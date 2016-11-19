@@ -161,7 +161,7 @@ namespace Microsoft.Azure.Web.DataProtection
                 {
                     var xdoc = XDocument.Load(reader);
 
-                    string siteName = Environment.GetEnvironmentVariable(AzureWebsiteName);
+                    string siteName = Environment.GetEnvironmentVariable(AzureWebsitesIISSiteName);
                     string xpath = string.Format(CultureInfo.InvariantCulture, MachingKeyXPathFormat, siteName);
 
                     key = ((IEnumerable)xdoc.XPathEvaluate(xpath)).Cast<XAttribute>().FirstOrDefault()?.Value;

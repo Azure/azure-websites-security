@@ -155,7 +155,7 @@ namespace Microsoft.Azure.Web.DataProtection
         {
             string key = null;
 
-            if (Util.IsAzureEnvironment() && File.Exists(RootWebConfigPath))
+            if (Util.IsAzureEnvironment() && File.Exists(Environment.ExpandEnvironmentVariables(RootWebConfigPath)))
             {
                 using (var reader = new StringReader(File.ReadAllText(RootWebConfigPath)))
                 {

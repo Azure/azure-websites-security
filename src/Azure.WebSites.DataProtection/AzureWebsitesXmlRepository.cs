@@ -154,10 +154,10 @@ namespace Microsoft.Azure.Web.DataProtection
         private static string GetMachineConfigKey()
         {
             string key = null;
-
-            if (Util.IsAzureEnvironment() && File.Exists(Environment.ExpandEnvironmentVariables(RootWebConfigPath)))
+            string configPath = Environment.ExpandEnvironmentVariables(RootWebConfigPath);
+            if (Util.IsAzureEnvironment() && File.Exists(configPath))
             {
-                using (var reader = new StringReader(File.ReadAllText(RootWebConfigPath)))
+                using (var reader = new StringReader(File.ReadAllText(configPath)))
                 {
                     var xdoc = XDocument.Load(reader);
 

@@ -5,8 +5,8 @@
   "version": "0.1.6-*",
 
   "dependencies": {
-    "Microsoft.AspNetCore.DataProtection": "1.1.0",
-    "Microsoft.Extensions.DependencyInjection": "1.1.0"
+    "Microsoft.AspNetCore.DataProtection": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0"
   },
 
   "frameworks": {

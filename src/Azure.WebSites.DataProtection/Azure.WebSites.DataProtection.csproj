@@ -5,10 +5,12 @@
     <VersionPrefix>0.1.6</VersionPrefix>
     <TargetFrameworks>netstandard1.3;net46</TargetFrameworks>
     <AssemblyName>Microsoft.Azure.WebSites.DataProtection</AssemblyName>
-    <PackageId>Azure.WebSites.DataProtection</PackageId>
+    <PackageId>Microsoft.Azure.WebSites.DataProtection</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Authors>Microsoft</Authors>
+    <Description>Azure Websites data protection and security helpers.</Description>
   </PropertyGroup>
 
   <ItemGroup>

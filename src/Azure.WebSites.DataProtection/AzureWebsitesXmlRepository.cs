@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using static Microsoft.Azure.Web.DataProtection.Constants;
+using static Microsoft.Azure.Web.DataProtection.Util;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
@@ -26,8 +25,6 @@ namespace Microsoft.Azure.Web.DataProtection
         internal static readonly XName DescriptorElementName = "descriptor";
         internal static readonly XName DeserializerTypeAttributeName = "deserializerType";
         private static readonly Regex KeySettingNameRegex = new Regex($"^{AzureWebReferencedKeyPrefix}(?<keyid>[0-9A-Fa-f]{{8}}[-]([0-9A-Fa-f]{{4}}-){{3}}[0-9A-Fa-f]{{12}})$");
-
-        private static Guid DefaultKeyId = Guid.Parse(DefaultEncryptionKeyId);
 
         private readonly AuthenticatedEncryptorConfiguration _encryptorConfiguration;
 
@@ -47,7 +44,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
             if (keyValue != null)
             {
-                return Util.ConvertHexToByteArray(keyValue);
+                return ConvertHexToByteArray(keyValue);
             }
 
             return null;
@@ -122,7 +119,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        return new CryptographicKey(keyId, Util.ConvertHexToByteArray(value));
+                        return new CryptographicKey(keyId, ConvertHexToByteArray(value));
                     }
                 }
             }
@@ -137,7 +134,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
             if (keyValue != null)
             {
-                return Util.ConvertHexToByteArray(keyValue);
+                return ConvertHexToByteArray(keyValue);
             }
 
             return null;
@@ -146,29 +143,5 @@ namespace Microsoft.Azure.Web.DataProtection
         private string GetEnvironmentKey(Guid keyId) => Environment.GetEnvironmentVariable(GetKeySettingName(keyId));
 
         private string GetKeySettingName(Guid keyId) => $"{AzureWebReferencedKeyPrefix}{keyId}";
-
-        private string GetDefaultKeyValue() => Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey) ?? GetMachineConfigKey();
-
-        private static bool IsDefaultKey(Guid keyId) => DefaultKeyId == keyId;
-
-        private static string GetMachineConfigKey()
-        {
-            string key = null;
-            string configPath = Environment.ExpandEnvironmentVariables(RootWebConfigPath);
-            if (Util.IsAzureEnvironment() && File.Exists(configPath))
-            {
-                using (var reader = new StringReader(File.ReadAllText(configPath)))
-                {
-                    var xdoc = XDocument.Load(reader);
-
-                    string siteName = Environment.GetEnvironmentVariable(AzureWebsitesIISSiteName);
-                    string xpath = string.Format(CultureInfo.InvariantCulture, MachingKeyXPathFormat, siteName);
-
-                    key = ((IEnumerable)xdoc.XPathEvaluate(xpath)).Cast<XAttribute>().FirstOrDefault()?.Value;
-                }
-            }
-
-            return key;
-        }
     }
 }

@@ -34,7 +34,7 @@ namespace Microsoft.Azure.Web.DataProtection
             }
         }
 
-        internal static string GetDefaultKeyValue() => Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey) ?? GetMachineConfigKey();
+        public static string GetDefaultKeyValue() => Environment.GetEnvironmentVariable(AzureWebsiteLocalEncryptionKey) ?? GetMachineConfigKey();
 
         internal static bool IsDefaultKey(Guid keyId) => DefaultKeyId == keyId;
 

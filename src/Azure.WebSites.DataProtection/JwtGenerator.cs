@@ -56,7 +56,7 @@ namespace Microsoft.Azure.Web.DataProtection
             }
         }
 
-        private static TokenValidationParameters GetDefaultValidationParameters()
+        public static TokenValidationParameters GetDefaultValidationParameters()
         {
             return new TokenValidationParameters
             {

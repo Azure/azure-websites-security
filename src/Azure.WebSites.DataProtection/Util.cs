@@ -40,9 +40,23 @@ namespace Microsoft.Azure.Web.DataProtection
 
         internal static string GetMachineConfigKey()
         {
-            string key = null;
+            if (!IsAzureEnvironment())
+            {
+                return null;
+            }
+
+            // First, attempt to resolve the key from the environment.
+            // The App Service infrastructure will inject this in warmup scenarios:
+            string key = Environment.GetEnvironmentVariable(AzureWebsiteEnvironmentMachineKey);
+            if (!string.IsNullOrEmpty(key))
+            {
+                return key;
+            }
+
+            // If we don't have an environment key set, attemp to read the key from
+            // the rootweb.config file:
             string configPath = Environment.ExpandEnvironmentVariables(RootWebConfigPath);
-            if (IsAzureEnvironment() && File.Exists(configPath))
+            if (File.Exists(configPath))
             {
                 using (var reader = new StringReader(File.ReadAllText(configPath)))
                 {

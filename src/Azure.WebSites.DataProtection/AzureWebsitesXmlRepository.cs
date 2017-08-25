@@ -28,7 +28,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private readonly AuthenticatedEncryptorConfiguration _encryptorConfiguration;
 
-        public AzureWebsitesXmlRepository(IAuthenticatedEncryptorConfiguration encryptorConfiguration)
+        public AzureWebsitesXmlRepository(AlgorithmConfiguration encryptorConfiguration)
         {
             _encryptorConfiguration = encryptorConfiguration as AuthenticatedEncryptorConfiguration;
         }
@@ -94,7 +94,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
         private XElement CreateKeyElement(CryptographicKey k, int position)
         {
-            var newDescriptor = new AuthenticatedEncryptorDescriptor(_encryptorConfiguration.Settings, new Secret(k.Value));
+            var newDescriptor = new AuthenticatedEncryptorDescriptor(_encryptorConfiguration, new Secret(k.Value));
             var descriptor = newDescriptor.ExportToXml();
   
             return new XElement(KeyElementName,

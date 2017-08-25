@@ -15,7 +15,7 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
         [Fact]
         public void GetAllKeys_WithNoKeysSet_ReturnsDefaultKey()
         {
-            var configuration = new AuthenticatedEncryptorConfiguration(new AuthenticatedEncryptionSettings());
+            var configuration = new AuthenticatedEncryptorConfiguration();
             var resolver = new AzureWebsitesXmlRepository(configuration);
             string keyValue = "0F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A248";
 
@@ -43,10 +43,11 @@ namespace Microsoft.Azure.Web.DataProtection.Tests
         [Fact]
         public void GetAllKeys_WithEnvironmentKeyPresent_UsesEnvironmentKey()
         {
-            var configuration = new AuthenticatedEncryptorConfiguration(new AuthenticatedEncryptionSettings());
+            var configuration = new AuthenticatedEncryptorConfiguration();
             var resolver = new AzureWebsitesXmlRepository(configuration);
             string keyValue = "0F75CA46E7EBDD39E4CA6B074D1F9A5972B849A55F91A249";
 
+            using (new TestScopedEnvironmentVariable(Constants.AzureWebsiteLocalEncryptionKey, null))
             using (new TestScopedEnvironmentVariable(Constants.AzureWebsiteInstanceId, "test"))
             using (new TestScopedEnvironmentVariable(Constants.AzureWebsiteEnvironmentMachineKey, keyValue))
             {

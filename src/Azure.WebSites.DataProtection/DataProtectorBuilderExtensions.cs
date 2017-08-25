@@ -5,6 +5,7 @@ using System;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace Microsoft.Azure.Web.DataProtection
 {
@@ -16,7 +17,8 @@ namespace Microsoft.Azure.Web.DataProtection
             {
                 builder.DisableAutomaticKeyGeneration();
                 builder.SetDefaultKeyLifetime(TimeSpan.MaxValue);
-                builder.Services.AddSingleton<IXmlRepository, AzureWebsitesXmlRepository>();
+                builder.Services.Configure<KeyManagementOptions>(options 
+                    => options.XmlRepository = new AzureWebsitesXmlRepository(options.AuthenticatedEncryptorConfiguration));
             }
 
             return builder;

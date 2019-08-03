@@ -25,6 +25,11 @@ namespace Microsoft.Azure.Web.DataProtection
 
         public static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(Constants.AzureWebsiteInstanceId) != null;
 
+        public static bool IsLinuxContainerEnvironment()
+        {
+            return !IsAzureEnvironment() && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ContainerName));
+        }
+
         internal static byte[] CreateKey()
         {
             using (var aes = System.Security.Cryptography.Aes.Create())

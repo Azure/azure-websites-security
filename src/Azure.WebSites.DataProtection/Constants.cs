@@ -9,6 +9,7 @@ namespace Microsoft.Azure.Web.DataProtection
     {
         public const string AzureWebsitesIISSiteName = "WEBSITE_IIS_SITE_NAME";
         public const string AzureWebsiteInstanceId = "WEBSITE_INSTANCE_ID";
+        public const string ContainerName = "CONTAINER_NAME";
         public const string AzureWebsitePrimaryEncryptionKeyId = "AzureWebPrimaryEncryptionKey";
         public const string AzureWebsiteLocalEncryptionKey = "AzureWebEncryptionKey";
         public const string AzureWebsiteEnvironmentMachineKey = "MACHINEKEY_DecryptionKey";

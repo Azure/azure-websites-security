@@ -23,7 +23,12 @@ namespace Microsoft.Azure.Web.DataProtection
             .Select(b => Convert.ToByte(keyValue.Substring(b * 2, 2), 16))
             .ToArray();
 
-        public static bool IsAzureEnvironment() => Environment.GetEnvironmentVariable(Constants.AzureWebsiteInstanceId) != null;
+        public static bool IsAppServiceEnvironment() => Environment.GetEnvironmentVariable(Constants.AzureWebsiteInstanceId) != null;
+
+        public static bool IsLinuxContainerEnvironment()
+        {
+            return !IsAppServiceEnvironment() && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ContainerName));
+        }
 
         internal static byte[] CreateKey()
         {
@@ -40,7 +45,7 @@ namespace Microsoft.Azure.Web.DataProtection
 
         internal static string GetMachineConfigKey()
         {
-            if (!IsAzureEnvironment())
+            if (!IsAppServiceEnvironment())
             {
                 return null;
             }

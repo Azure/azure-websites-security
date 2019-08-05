@@ -13,7 +13,7 @@ namespace Microsoft.Azure.Web.DataProtection
     {
         public static IDataProtectionBuilder UseAzureWebsitesProviderSettings(this IDataProtectionBuilder builder, bool skipEnvironmentValidation = false)
         {
-            if (skipEnvironmentValidation || Util.IsAzureEnvironment())
+            if (skipEnvironmentValidation || Util.IsAppServiceEnvironment() || Util.IsLinuxContainerEnvironment())
             {
                 builder.DisableAutomaticKeyGeneration();
                 builder.SetDefaultKeyLifetime(TimeSpan.MaxValue);

@@ -1,0 +1,66 @@
+variables:
+  buildConfiguration: 'Release'
+  buildVersion: $[ counter('constant', 94) ]
+  versionPrefix: '2.1'
+  versionSuffix: 'alpha'
+  DOTNET_NOLOGO: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+trigger:
+  branches:
+    include:
+    - master
+    - ns20
+
+pr:
+  branches:
+    include:
+    - master
+    - ns20
+
+jobs:
+- job: BuildAndTest
+  pool:
+    name: '1ES-Hosted-AzFunc'
+    demands:
+      - ImageOverride -equals MMS2019TLS
+
+  steps:
+  - task: 1ESHostedPoolValidation@1
+
+  - pwsh: dotnet --version
+    displayName: "Echo dotnet version"
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project'
+    inputs:
+      command: 'build'
+      arguments: '-c $(buildConfiguration)'
+      projects: 'Azure.Web.DataProtection.sln'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run tests'
+    inputs:
+      command: 'test'
+      arguments: '--no-build -c $(buildConfiguration)'
+      projects: |
+        test/**/**Tests.csproj
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build package'
+    inputs:
+      command: 'custom'
+      custom: 'pack'
+      arguments: '--no-build -c Release -p:Version="$(versionPrefix).$(buildVersion)-$(versionSuffix)" -o packages'
+      projects: |
+        **/Azure.WebSites.DataProtection.csproj
+
+  - task: ManifestGeneratorTask@0
+    displayName: 'SBOM Generation'
+    inputs:
+      BuildDropPath: '$(System.DefaultWorkingDirectory)/packages'
+      Verbosity: 'Information'
+
+  - publish: $(System.DefaultWorkingDirectory)/packages
+    artifact: drop

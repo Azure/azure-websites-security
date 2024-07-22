@@ -41,8 +41,7 @@ jobs:
     inputs:
       command: 'test'
       arguments: '--no-build -c $(buildConfiguration)'
-      projects: |
-        test/**/**Tests.csproj
+      projects: 'Azure.Web.DataProtection.sln'
 
   - ${{ if eq(parameters.SkipBuildArtifacts, false) }}:
     - task: DotNetCoreCLI@2
@@ -50,6 +49,6 @@ jobs:
       inputs:
         command: 'custom'
         custom: 'pack'
-        arguments: '-c Release -p:Version="$(versionPrefix).$(buildVersion)-$(versionSuffix)" -o packages'
+        arguments: '--no-build -c Release -p:Version="$(versionPrefix).$(buildVersion)-$(versionSuffix)" -o packages'
         projects: |
           **/Azure.WebSites.DataProtection.csproj

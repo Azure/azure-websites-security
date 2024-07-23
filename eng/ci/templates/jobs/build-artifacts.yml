@@ -2,18 +2,11 @@ parameters:
   - name: SkipBuildArtifacts
     type: boolean
     default: false
-  - name: PoolName
-    type: string
 
 jobs:
 
 - job: BuildArtifacts
   displayName: Build Artifacts
-
-  pool:
-    name: ${{ parameters.PoolName }}
-    image: 1es-windows-2022
-    os: windows
 
   variables:
     - template: /eng/ci/templates/variables/build.yml@self

@@ -2,6 +2,8 @@ parameters:
   - name: SkipBuildArtifacts
     type: boolean
     default: false
+  - name: PoolName
+    type: string
 
 jobs:
 
@@ -9,7 +11,7 @@ jobs:
   displayName: Build Artifacts
 
   pool:
-    name: 1es-pool-azfunc
+    name: ${{ parameters.PoolName }}
     image: 1es-windows-2022
     os: windows
 

@@ -8,11 +8,6 @@ jobs:
 - job: BuildArtifacts
   displayName: Build Artifacts
 
-  pool:
-    name: 1es-pool-azfunc
-    image: 1es-windows-2022
-    os: windows
-
   variables:
     - template: /eng/ci/templates/variables/build.yml@self
 

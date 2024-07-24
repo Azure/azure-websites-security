@@ -36,7 +36,8 @@ jobs:
     inputs:
       command: 'test'
       arguments: '--no-build -c $(buildConfiguration)'
-      projects: 'Azure.Web.DataProtection.sln'
+      projects: |
+        test/**/**Tests.csproj
 
   - ${{ if eq(parameters.SkipBuildArtifacts, false) }}:
     - task: DotNetCoreCLI@2

@@ -37,7 +37,11 @@ namespace Microsoft.Azure.Web.DataProtection
 
         public static ClaimsPrincipal ValidateToken(string token, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
         {
-            validationParameters = validationParameters ?? GetDefaultValidationParameters();
+            if (validationParameters is null)
+            {
+                throw new ArgumentNullException(nameof(validationParameters));
+            }
+
             var handler = new JwtSecurityTokenHandler();
 
             return handler.ValidateToken(token, validationParameters, out validatedToken);
@@ -54,16 +58,6 @@ namespace Microsoft.Azure.Web.DataProtection
             {
                 return false;
             }
-        }
-
-        public static TokenValidationParameters GetDefaultValidationParameters()
-        {
-            return new TokenValidationParameters
-            {
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Util.GetDefaultKeyValue())),
-                ValidateAudience = false,
-                ValidateIssuer = false
-            };
         }
     }
 }

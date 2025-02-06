@@ -20,11 +20,20 @@ namespace Azure.WebSites.DataProtection.UnitTests
         [Fact]
         public void IssuedToken_WithDefaultValidation_SucceedsValidation()
         {
+            // There are two separate CodeQL alerts for the same issue. The double comment on same line is intentional.
+            // CodeQL [SM04555] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM04554] this handler does not verify AAD tokens. It verifies tokens issued by the platform.
+            var testParameters = new TokenValidationParameters()
+            {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestKeyValue)),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+
             using (var variables = new TestScopedEnvironmentVariable(Constants.AzureWebsiteLocalEncryptionKey, TestKeyValue))
             {
                 var token = JwtGenerator.GenerateToken("testissuer", "testaudience");
 
-                bool result = JwtGenerator.IsTokenValid(token);
+                bool result = JwtGenerator.IsTokenValid(token, testParameters);
 
                 Assert.True(result);
             }

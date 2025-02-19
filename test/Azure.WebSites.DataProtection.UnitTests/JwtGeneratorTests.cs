@@ -24,8 +24,8 @@ namespace Azure.WebSites.DataProtection.UnitTests
             var testParameters = new TokenValidationParameters()
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestKeyValue)),
-                ValidateIssuer = false, // CodeQL [SM04387] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM03926] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM04284] this handler does not verify AAD tokens. It verifies tokens issued by the platform.
-                ValidateAudience = false // CodeQL [SM04387] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM03926] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM04284] this handler does not verify AAD tokens. It verifies tokens issued by the platform.
+                ValidateIssuer = false, // CodeQL [SM03926] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM04284] this handler does not verify AAD tokens. It verifies tokens issued by the platform.
+                ValidateAudience = false // CodeQL [SM03926] this handler does not verify AAD tokens. It verifies tokens issued by the platform. // CodeQL [SM04284] this handler does not verify AAD tokens. It verifies tokens issued by the platform.
             };
 
             using (var variables = new TestScopedEnvironmentVariable(Constants.AzureWebsiteLocalEncryptionKey, TestKeyValue))

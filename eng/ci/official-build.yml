@@ -46,6 +46,7 @@ extends:
          compiled:
            enabled: true
          runSourceLanguagesInSourceAnalysis: true
+         excludePathPatterns: "text/**"
 
     stages:
     - stage: Build

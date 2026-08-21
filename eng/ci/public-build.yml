@@ -14,7 +14,6 @@ schedules:
     branches:
       include:
       - main
-      - v0.x
     always: true
 
 pr:

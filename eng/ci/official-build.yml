@@ -12,7 +12,6 @@ schedules:
     branches:
       include:
       - main
-      - v0.x
     always: true
 
 # CI only, does not trigger on PRs.
